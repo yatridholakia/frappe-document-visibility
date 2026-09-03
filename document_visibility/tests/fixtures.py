@@ -87,8 +87,7 @@ def create_test_doctype():
 				{"fieldname": "closed_on", "fieldtype": "Date", "label": "Closed On"},
 			],
 			"permissions": [
-				{"role": role, "read": 1, "write": 1, "create": 1, "delete": 1}
-				for role in (ROLE_A, ROLE_B)
+				{"role": role, "read": 1, "write": 1, "create": 1, "delete": 1} for role in (ROLE_A, ROLE_B)
 			],
 		}
 	).insert(ignore_permissions=True)

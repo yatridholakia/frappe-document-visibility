@@ -171,6 +171,10 @@ def is_visible(dvr, doc, user):
 
 	if dvr.apply_custom_visibility and dvr.get("custom_visibility_expression"):
 		try:
+			# Expressions are authored only by System Manager, are compiled against the
+			# restricted DVR grammar on save, and run through frappe's safe_eval with no
+			# globals and only `doc` in scope. See DocumentVisibilityRule.validate_expressions.
+			# nosemgrep: frappe-semgrep-rules.rules.security.frappe-codeinjection-eval
 			if safe_eval(
 				dvr.custom_visibility_expression,
 				eval_globals={},

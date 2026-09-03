@@ -70,11 +70,7 @@ function preview(frm, fieldname) {
 						.text(message.sql)
 				);
 			} else {
-				wrapper.append(
-					$("<div>")
-						.css({ "font-size": "11px", color: "var(--red-500)" })
-						.text(message.error)
-				);
+				wrapper.append($("<div>").css({ "font-size": "11px", color: "var(--red-500)" }).text(message.error));
 			}
 		},
 	});
@@ -145,8 +141,8 @@ function render_explanation(dialog, result) {
 							? rule.restriction_passed === null
 								? "-"
 								: rule.restriction_passed
-									? __("passed")
-									: __("excluded")
+								? __("passed")
+								: __("excluded")
 							: __("none")
 					}</td>
 					<td><b>${rule.grants_access ? __("grants access") : __("no access")}</b></td>

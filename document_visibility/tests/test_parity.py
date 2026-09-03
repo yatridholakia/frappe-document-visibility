@@ -161,7 +161,12 @@ class TestVisibilityParity(DVRTestCase):
 		self.assertParity(USER_B, [mine, theirs], expected={theirs.name})
 
 	def test_administrator_is_never_filtered(self):
-		create_rule(ROLE_A, visible_to_creator=1, restrict_visibility=1, restriction_expression='doc.status == "Nothing"')
+		create_rule(
+			ROLE_A,
+			visible_to_creator=1,
+			restrict_visibility=1,
+			restriction_expression='doc.status == "Nothing"',
+		)
 		docs = [create_doc(USER_A), create_doc(USER_B)]
 
 		frappe.set_user("Administrator")

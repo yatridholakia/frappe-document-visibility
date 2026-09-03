@@ -30,8 +30,8 @@ jobs:
         include:
           - frappe-branch: version-15
             python-version: "3.11"
-          - frappe-branch: develop
-            python-version: "3.12"
+          - frappe-branch: version-16
+            python-version: "3.14"
 
     services:
       mariadb:
@@ -58,7 +58,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.frappe-branch == 'version-15' && 20 || 24 }}
 
       - name: Install system dependencies
         run: |

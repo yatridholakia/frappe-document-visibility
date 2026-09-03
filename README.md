@@ -144,6 +144,28 @@ The expression compiler tests need no site:
 python -m unittest document_visibility.tests.test_expression
 ```
 
+CI runs the suite against two branches: **version-15** (Python 3.11, Node 20) and
+**version-16** (Python 3.14, Node 24).
+
+### Linting
+
+Formatting and linting run through [pre-commit](https://pre-commit.com) — ruff for
+Python, prettier and eslint for JavaScript. Install the hook once:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+To check everything without committing:
+
+```bash
+pre-commit run --all-files
+```
+
+CI additionally runs the [Frappe semgrep rules](https://github.com/frappe/semgrep-rules)
+and `ruff format --check`, so a clean pre-commit run means a green build.
+
 ## License
 
 MIT. See [license.txt](license.txt).

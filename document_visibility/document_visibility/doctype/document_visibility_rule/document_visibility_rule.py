@@ -117,7 +117,10 @@ class DocumentVisibilityRule(Document):
 		# Only compile what is actually in use, so a leftover expression on a
 		# disabled checkbox never blocks a save.
 		for label, expression in (
-			(_("Custom Visibility Expression"), self.apply_custom_visibility and self.custom_visibility_expression),
+			(
+				_("Custom Visibility Expression"),
+				self.apply_custom_visibility and self.custom_visibility_expression,
+			),
 			(_("Restriction Expression"), self.restrict_visibility and self.restriction_expression),
 		):
 			if not expression:

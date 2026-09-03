@@ -70,9 +70,7 @@ def explain_visibility(reference_doctype, docname, user):
 
 	if reference_doctype in GUARDED_DOCTYPES:
 		result["visible"] = True
-		result["reason"] = _("{0} is never filtered: evaluating a rule reads it.").format(
-			reference_doctype
-		)
+		result["reason"] = _("{0} is never filtered: evaluating a rule reads it.").format(reference_doctype)
 		return result
 
 	if not has_rpm_read_permission(reference_doctype, user):
@@ -84,9 +82,7 @@ def explain_visibility(reference_doctype, docname, user):
 
 	if not is_dvr_applicable(reference_doctype):
 		result["visible"] = True
-		result["reason"] = _("No enabled rule covers {0}, so nothing is filtered.").format(
-			reference_doctype
-		)
+		result["reason"] = _("No enabled rule covers {0}, so nothing is filtered.").format(reference_doctype)
 		return result
 
 	rules = get_applicable_dvrs(user, reference_doctype)
