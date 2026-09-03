@@ -53,8 +53,7 @@ class TestExpressionCompiler(unittest.TestCase):
 	def test_nested_boolean_operators(self):
 		self.assertEqual(
 			compile_expr('(doc.status == "Open" or doc.status == "Working") and doc.amount > 10'),
-			"((`tabTask`.`status` = 'Open' OR `tabTask`.`status` = 'Working') "
-			"AND `tabTask`.`amount` > 10)",
+			"((`tabTask`.`status` = 'Open' OR `tabTask`.`status` = 'Working') AND `tabTask`.`amount` > 10)",
 		)
 
 	def test_null_comparison_uses_is_null(self):
@@ -68,7 +67,9 @@ class TestExpressionCompiler(unittest.TestCase):
 		self.assertIn("is None", str(ctx.exception))
 
 	def test_string_literals_are_escaped(self):
-		self.assertEqual(compile_expr("""doc.department == "O'Brien" """), "`tabTask`.`department` = 'O''Brien'")
+		self.assertEqual(
+			compile_expr("""doc.department == "O'Brien" """), "`tabTask`.`department` = 'O''Brien'"
+		)
 		self.assertEqual(compile_expr(r'doc.department == "a\\b"'), "`tabTask`.`department` = 'a\\\\b'")
 
 	def test_booleans_compile_to_integers(self):
