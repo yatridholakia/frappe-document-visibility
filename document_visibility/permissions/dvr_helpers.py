@@ -163,7 +163,11 @@ def passes_restriction(dvr, doc):
 		return False  # fail closed
 
 	try:
+		# Expressions are authored only by System Manager, are compiled against the
+		# restricted DVR grammar on save, and run through frappe's safe_eval with no
+		# globals and only `doc` in scope. See DocumentVisibilityRule.validate_expressions.
 		return bool(
+			# nosemgrep: frappe-semgrep-rules.rules.security.frappe-codeinjection-eval
 			safe_eval(
 				dvr.restriction_expression,
 				eval_globals={},
