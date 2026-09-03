@@ -1,0 +1,11 @@
+.DS_Store
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+.venv/
+node_modules/
+
+# local working notes, never published
+CLAUDE.md

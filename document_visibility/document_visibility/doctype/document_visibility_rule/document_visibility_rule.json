@@ -1,0 +1,169 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{reference_doctype} - {applies_to_role}",
+ "creation": "2026-01-01 15:15:17.826835",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_doctype",
+  "column_break_rgwl",
+  "applies_to_role",
+  "enabled",
+  "section_break_znou",
+  "visible_to_creator",
+  "column_break_xbok",
+  "visible_to_assignees",
+  "team_visibility_section",
+  "visible_to_team",
+  "custom_visibility_section",
+  "apply_custom_visibility",
+  "custom_visibility_expression",
+  "scope_restrictions_section",
+  "restrict_visibility",
+  "restriction_expression",
+  "section_break_pkso",
+  "dvr_guide"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "applies_to_role",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Applies to Role",
+   "options": "Role",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_rgwl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_znou",
+   "fieldtype": "Section Break",
+   "label": "Base Visibility "
+  },
+  {
+   "default": "0",
+   "description": "Allow users to see documents they created (owner = user).",
+   "fieldname": "visible_to_creator",
+   "fieldtype": "Check",
+   "label": "Visible to Creator"
+  },
+  {
+   "default": "0",
+   "description": "Allow users to see documents assigned to them via ToDo.\nOnly Open ToDo(s) are considered.",
+   "fieldname": "visible_to_assignees",
+   "fieldtype": "Check",
+   "label": "Visible to Assignees"
+  },
+  {
+   "fieldname": "column_break_xbok",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "When enabled, visibility is shared with other users in the same team(s).\nTeam membership is resolved using User Groups.",
+   "fieldname": "team_visibility_section",
+   "fieldtype": "Section Break",
+   "label": "Team Visibility"
+  },
+  {
+   "default": "0",
+   "fieldname": "visible_to_team",
+   "fieldtype": "Check",
+   "label": "Visible to Team"
+  },
+  {
+   "description": "Enables a custom visibility condition using a Python-style expression.\n\nIt determines who can see a document, independent of owner or assignment.",
+   "fieldname": "custom_visibility_section",
+   "fieldtype": "Section Break",
+   "label": "Custom Visibility"
+  },
+  {
+   "depends_on": "restrict_visibility",
+   "description": "Use doc.&lt;fieldname&gt; to refer to document fields.\n\nExample: doc.status in (\"Open\", \"Working\")",
+   "fieldname": "restriction_expression",
+   "fieldtype": "Code",
+   "label": "Restriction Expression",
+   "options": "Python"
+  },
+  {
+   "default": "0",
+   "fieldname": "restrict_visibility",
+   "fieldtype": "Check",
+   "label": "Restrict Visibility"
+  },
+  {
+   "fieldname": "section_break_pkso",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "dvr_guide",
+   "fieldtype": "HTML",
+   "label": "DVR Guide",
+   "options": "<h3>Document Visibility Rule (DVR) - Configuration Guide</h3>\n\n<p>\nDocument Visibility Rules control <strong>who can see which documents</strong>\nwithout modifying Role Permission Manager (RPM) or Workflow permissions.\nThey operate as an additional visibility filter layered on top of standard Frappe permissions.\n</p>\n\n<hr>\n\n<h4>How DVR Works</h4>\n\n<ul>\n  <li>DVR controls <strong>READ visibility only</strong></li>\n  <li>Users must already have READ permission via Role Permission Manager</li>\n  <li>DVR can only take visibility away -- it never grants access RPM has not already given</li>\n  <li>Visibility rules are evaluated for:\n    <ul>\n      <li>List Views</li>\n      <li>Reports</li>\n      <li>Link fields</li>\n      <li>Direct document access</li>\n    </ul>\n  </li>\n</ul>\n\n<hr>\n\n<h4>Visibility Logic</h4>\n\n<p>\nEach rule is evaluated in two layers:\n</p>\n\n<ol>\n  <li>\n    <strong>Base Visibility (OR)</strong>\n    <ul>\n      <li>Creator-based visibility</li>\n      <li>Assignment-based visibility</li>\n      <li>Team-expanded visibility</li>\n      <li>Custom visibility expression</li>\n    </ul>\n  </li>\n\n  <li>\n    <strong>Restriction (AND)</strong>\n    <ul>\n      <li>Custom restriction expression</li>\n    </ul>\n  </li>\n</ol>\n\n<p>\nA document is visible when <strong>some</strong> rule that applies to the user grants base\nvisibility <strong>and</strong> that same rule's restriction passes. A restriction never\nleaks across into another role's rule.\n</p>\n\n<h4>Multiple Roles</h4>\n\n<p>\nIf a user holds several roles, each role's rule is evaluated independently and the\nresults are combined with OR.\n</p>\n\n<p>\nIf:\n</p>\n\n<ul>\n  <li>Role A allows visibility <strong>only where</strong> <code>doc.status == \"Open\"</code></li>\n  <li>Role B allows visibility <strong>only where</strong> <code>doc.status == \"Closed\"</code></li>\n</ul>\n\n<p>\n<strong>Result:</strong><br>\nThe user can see documents that are <strong>Open</strong> or <strong>Closed</strong>.\n</p>\n\n<hr>\n\n<h4>Team Visibility</h4>\n\n<p>\nWhen <strong>Visible to Team</strong> is enabled, visibility is expanded to include\nusers belonging to the same <strong>User Groups</strong>.\n</p>\n\n<hr>\n\n<h4>Expression Rules</h4>\n\n<p>\nExpressions use a restricted Python syntax and are safely compiled to SQL.\n</p>\n\n<strong>Allowed</strong>\n<ul>\n  <li>doc.fieldname</li>\n  <li>==, !=, &gt;, &lt;, &gt;=, &lt;=</li>\n  <li>in, not in</li>\n  <li>is None, is not None</li>\n  <li>and, or</li>\n</ul>\n\n<strong>Not Allowed</strong>\n<ul>\n  <li>Function calls</li>\n  <li>Method access</li>\n  <li>Dynamic code</li>\n  <li>Anything other than <code>doc.&lt;fieldname&gt;</code> and literals</li>\n</ul>\n"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_custom_visibility",
+   "fieldtype": "Check",
+   "label": "Apply Custom Visibility"
+  },
+  {
+   "depends_on": "apply_custom_visibility",
+   "description": "Use doc.&lt;fieldname&gt; to reference document fields.\nExample: doc.department == \"Sales\"",
+   "fieldname": "custom_visibility_expression",
+   "fieldtype": "Code",
+   "label": "Custom Visibility Expression",
+   "options": "Python"
+  },
+  {
+   "description": "Enables an additional restrictive condition that limits visibility even when base visibility is granted.",
+   "fieldname": "scope_restrictions_section",
+   "fieldtype": "Section Break",
+   "label": "Scope Restrictions"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-27 16:48:06.674136",
+ "modified_by": "Administrator",
+ "module": "Document Visibility",
+ "name": "Document Visibility Rule",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "reference_doctype"
+}

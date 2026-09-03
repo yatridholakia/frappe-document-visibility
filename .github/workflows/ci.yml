@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  compiler:
+    name: Expression compiler (no site)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run compiler unit tests
+        run: python -m unittest document_visibility.tests.test_expression -v
+
+  tests:
+    name: Frappe ${{ matrix.frappe-branch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - frappe-branch: version-15
+            python-version: "3.11"
+          - frappe-branch: develop
+            python-version: "3.12"
+
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=15
+
+    steps:
+      - name: Check out the app
+        uses: actions/checkout@v4
+        with:
+          path: document_visibility
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y redis-server libcups2-dev
+          npm install -g yarn
+
+      - name: Configure MariaDB
+        run: |
+          mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mysql --host 127.0.0.1 --port 3306 -uroot -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+
+      - name: Set up bench
+        run: |
+          pip install frappe-bench
+          bench init --skip-redis-config-generation --frappe-branch ${{ matrix.frappe-branch }} --python "$(which python)" ~/frappe-bench
+          cd ~/frappe-bench
+          bench set-config -g redis_cache redis://127.0.0.1:6379
+          bench set-config -g redis_queue redis://127.0.0.1:6379
+          bench set-config -g redis_socketio redis://127.0.0.1:6379
+          bench new-site test_site \
+            --db-root-password root \
+            --admin-password admin \
+            --mariadb-user-host-login-scope='%'
+          bench --site test_site set-config developer_mode 1
+
+      - name: Install the app
+        run: |
+          cd ~/frappe-bench
+          bench get-app document_visibility "${GITHUB_WORKSPACE}/document_visibility"
+          bench --site test_site install-app document_visibility
+
+      - name: Run tests
+        run: |
+          cd ~/frappe-bench
+          bench --site test_site set-config allow_tests true
+          bench --site test_site run-tests --app document_visibility

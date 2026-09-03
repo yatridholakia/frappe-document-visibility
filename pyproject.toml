@@ -1,0 +1,44 @@
+[project]
+name = "document_visibility"
+authors = [{ name = "Yatri Dholakia", email = "yaatrie@gmail.com" }]
+description = "Row-level read visibility rules for Frappe DocTypes, configured as data."
+requires-python = ">=3.10"
+readme = "README.md"
+license = { file = "license.txt" }
+dynamic = ["version"]
+dependencies = []
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Framework :: Frappe",
+]
+
+[project.urls]
+Homepage = "https://github.com/yatridholakia/frappe-document-visibility"
+Issues = "https://github.com/yatridholakia/frappe-document-visibility/issues"
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "I", "UP", "B", "RUF"]
+ignore = [
+    "B017", # assertRaises(Exception)
+    "B023", # function-uses-loop-variable
+    "B904", # raise-without-from-inside-except
+    "E101", # indentation contains mixed spaces and tabs
+    "E501", # line too long
+    "F401", # imported but unused
+    "W191", # indentation contains tabs
+    "RUF001", # ambiguous unicode
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+docstring-code-format = true
